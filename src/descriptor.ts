@@ -508,8 +508,9 @@ export function createNamespace(
   parentName: string,
   statements: ts.Statement[],
 ): ts.ModuleDeclaration {
-  const identifiers = String(parentName).split(".");
 
+  const identifiers = String(parentName).split(".");
+  console.log(identifiers)
   let decl: ts.ModuleDeclaration | ts.ModuleBlock =
     ts.factory.createModuleBlock(statements);
 

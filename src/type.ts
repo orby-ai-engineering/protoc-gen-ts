@@ -58,7 +58,9 @@ export function getTypeReferenceExpr(
     );
   }
 
-  const name = removeNamespace(removeLeadingDot(typeName));
+  // const name = removeNamespace(removeLeadingDot(typeName));
+  const segs=typeName.split(".")
+  const name=segs.filter(s=>s.length && isUppercase(s)).join('')
 
   return ts.factory.createPropertyAccessExpression(
     dependencyMap.get(path)!,
@@ -73,6 +75,7 @@ export function getTypeReference(
 
   if (!path || !dependencyMap.has(path)) {
     if (config.no_namespace) {
+
       return ts.factory.createTypeReferenceNode(
         removeRootParentName(typeName, rootDescriptor.package).replace(/\./g, ''),
       );
@@ -82,14 +85,20 @@ export function getTypeReference(
     );
   }
 
-  const name = removeNamespace(removeLeadingDot(typeName));
+  const segs=typeName.split(".")
+  const name=segs.filter(s=>s.length && isUppercase(s)).join('')
 
   return ts.factory.createTypeReferenceNode(
     ts.factory.createQualifiedName(
         dependencyMap.get(path)!,
-        name,
+      name
+      ,
     )
   );
+}
+
+function isUppercase(word:string){
+  return word[0] !== word[0].toLowerCase()
 }
 
 function removeLeadingDot(name: string): string {
@@ -107,11 +116,7 @@ function removeRootParentName(name: string, parentName: string): string {
 }
 
 function removeNamespace(name: string): string {
-  if(config.no_namespace)
-  {
-    return removeRootParentName(name, packages.find(p => name.startsWith(p))).replace(/\./g, '')
-  }
-  return name;
+  return removeRootParentName(name, packages.find(p => name.startsWith(p))).replace(/\./g, '')
 }
 
 export function preprocess(
